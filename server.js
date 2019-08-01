@@ -16,9 +16,9 @@ app.get("/", (req, res, next) => {
 
 // Insert here other API endpoints
 
-// Gets all users from database.
-app.get("/api/user", (req, res, next) => {
-    var sql = "select * from user"
+// Gets all markers from database.
+app.get("/api/raw", (req, res, next) => {
+    var sql = "select * from raw"
     var params = []
     db.all(sql, params, (err, rows) => {
         if (err) {
@@ -47,7 +47,6 @@ app.get("/api/user/:id", (req, res, next) => {
         })
     })
 })
-
 
 
 // Default response for any other request
