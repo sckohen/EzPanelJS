@@ -1,16 +1,15 @@
-var sqlite3 = require('sqlite3').verbose()
+let mysql = require('mysql')
 
-const DBSOURCE = "db.sqlite"
+let connection = mysql.createConnection({
+    host     : 'localhost',
+    user     : 'nodejs',
+    password : '123456789first',
+    database : 'gene_bank'
+});
 
 const createTable = (table_name, obj) => {
-    let db = new sqlite3.Database(DBSOURCE, (err) => {
-        if (err) {
-            // Cannot open database
-            console.error("Cannot open database to create table.", err.message)
-            throw err
-        }else {
-            console.log('Connected to the SQLite database.')
-        }
+    connection.connect([], err => {
+        if (err) {console.log(err)}
     })
 
     // Fields of the table.
@@ -27,7 +26,12 @@ const createTable = (table_name, obj) => {
     const createStatement = `CREATE TABLE IF NOT EXISTS ${table_name} (
         ${fields})`
 
-    db.run(createStatement, (err) => {
+    connection.query(createStatement, [],(error, results, fields) => {
+        if (error) return console.log(error)
+        }
+    )
+
+    /*db.run(createStatement, (err) => {
         if (err) {
             // Table already created
             console.log(`The table: ${table_name} already exists.`)
@@ -35,19 +39,13 @@ const createTable = (table_name, obj) => {
             // Table just created
             console.log(`The table ${table_name} successfully created.`)
         }
-    })
-    // db.close()
+    })*/
+     connection.end()
 }
 
 const insertData = (table_name, data) => {
-    let db = new sqlite3.Database(DBSOURCE, (err) => {
-        if (err) {
-            // Cannot open database
-            console.error("Cannot open database to insert rows.", err.message)
-            throw err
-        }else {
-            console.log('Connected to the SQLite database.')
-        }
+    connection.connect([], err => {
+        if (err) {console.log(err)}
     })
 
     // Values of the table.
@@ -64,48 +62,54 @@ const insertData = (table_name, data) => {
     values = values.slice(0, -1)
     columnNames = columnNames.slice(0, -1)
 
-    let insertStatement = `INSERT INTO ${table_name} (${columnNames}) VALUES (${values})`
+    let insertStatement = "INSERT INTO `" + table_name + "` " + `(${columnNames}) VALUES (${values})`
 
-    db.run(insertStatement, [], err => {
-        console.log(`Row already exists within ${table_name}`)
-    })
-    db.close()
+    connection.query(insertStatement, [],(error, results, fields) => {
+            if (error) return console.log(error)
+        }
+    )
+    connection.end()
 }
 
 const insertDataBulk = (table_name, datas) => {
-    let db = new sqlite3.Database(DBSOURCE, (err) => {
-        if (err) {
-            // Cannot open database
-            console.error("Cannot open database to insert bulk.", err.message)
-            throw err
-        }else {
-            console.log('Connected to the SQLite database.')
-        }
+    connection.connect([], err => {
+        if (err) {console.log(err)}
     })
 
-    datas.map((data) => {
+    var query = ""
+
+    datas.map((data, index) => {
         // Values of the table.
         let values = ""
+
+        // Names of the columns
         let columnNames = ""
-        // Column name of the table.
+
         let keys = Object.keys(data)
+
         // Gets values of the table from the object.
         keys.map(key => {
-            columnNames += "'" + key.trim() + "',"
+            columnNames += "`" + key.trim() + "`,"
             values += "'" + data[key].trim() + "',"
         })
 
         values = values.slice(0, -1)
         columnNames = columnNames.slice(0, -1)
 
-        let insertStatement = `INSERT INTO ${table_name} (${columnNames}) VALUES (${values})`
+        let insertStatement = "INSERT INTO `" + table_name + "`" + ` (${columnNames}) VALUES (${values})`
+        //console.log(insertStatement)
+        query += insertStatement
+        //console.log(query)
 
-        db.run(insertStatement, [], err => {
-          if (err) console.log(`Row already exists within ${table_name}`)
-        })
+        if (index % 250 === 0) {
+            connection.query(query.replace('\\', ""), [],(error, results, fields) => {
+                if (error) return console.log(error)
+            })
+            query = ""
+        }
     })
 
-   // db.close()
+    connection.end()
 }
 
 module.exports = {createTable, insertData, insertDataBulk}

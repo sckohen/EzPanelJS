@@ -3,7 +3,7 @@ const fs = require('fs')
 const results = []
 
 const reader = (callback) => {
-    fs.createReadStream('testBig.csv')
+    fs.createReadStream('raw.csv')
         .pipe(csv())
         .on('data', (data) => results.push(data))
         .on('error', function(err){
