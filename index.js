@@ -8,6 +8,6 @@ csv((data) => {
 
 
 const geneticsTable = {'rsid':'VARCHAR(20)  PRIMARY KEY UNIQUE', 'chromosome':'VARCHAR(2)',
-    'position':'INT(9)', 'genotype':'VARCHAR(2)'}
-//db.createTable('aek23', geneticsTable)
+    'position':'VARCHAR(9)', 'genotype':'VARCHAR(2)'}
+// db.createTable('aek23', geneticsTable)
 

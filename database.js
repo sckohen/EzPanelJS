@@ -1,4 +1,5 @@
 let mysql = require('mysql')
+let fs = require('fs')
 
 let connection = mysql.createConnection({
     host     : 'localhost',
@@ -72,11 +73,12 @@ const insertData = (table_name, data) => {
 }
 
 const insertDataBulk = (table_name, datas) => {
+
     connection.connect([], err => {
         if (err) {console.log(err)}
     })
 
-    var query = ""
+    let bulkValue
 
     datas.map((data, index) => {
         // Values of the table.
@@ -89,26 +91,31 @@ const insertDataBulk = (table_name, datas) => {
 
         // Gets values of the table from the object.
         keys.map(key => {
-            columnNames += "`" + key.trim() + "`,"
+            columnNames += key.trim() + ","
             values += "'" + data[key].trim() + "',"
         })
 
         values = values.slice(0, -1)
         columnNames = columnNames.slice(0, -1)
 
-        let insertStatement = "INSERT INTO `" + table_name + "`" + ` (${columnNames}) VALUES (${values})`
-        //console.log(insertStatement)
-        query += insertStatement
-        //console.log(query)
+        bulkValue += `(${values}),`
+        console.log(bulkValue)
 
-        if (index % 250 === 0) {
-            connection.query(query.replace('\\', ""), [],(error, results, fields) => {
+        let insertStatement = "INSERT INTO " + table_name + "(" + columnNames + ")" + "VALUES" + bulkValue
+
+        fs.writeFile('dat.txt', bulkValue, (err) => {
+            if (err) console.log(err)
+        })
+
+        if (index % 25 === 0) {
+           /* connection.query(insertStatement, [],(error, results, fields) => {
                 if (error) return console.log(error)
-            })
-            query = ""
+            })*/
+            // console.log(bulkValue)
+            // bulkValue = ""
         }
-    })
 
+    })
     connection.end()
 }
 
