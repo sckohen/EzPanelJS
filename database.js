@@ -78,44 +78,44 @@ const insertDataBulk = (table_name, datas) => {
         if (err) {console.log(err)}
     })
 
-    let bulkValue
+    let values = ""
+    let bulkValue = ""
+    let insertStatement = "";
+    const firstData = datas[0];
+    let columnNames = ""
 
-    datas.map((data, index) => {
-        // Values of the table.
-        let values = ""
+    let keys = Object.keys(firstData)
 
-        // Names of the columns
-        let columnNames = ""
-
-        let keys = Object.keys(data)
-
-        // Gets values of the table from the object.
-        keys.map(key => {
-            columnNames += key.trim() + ","
-            values += "'" + data[key].trim() + "',"
-        })
-
-        values = values.slice(0, -1)
-        columnNames = columnNames.slice(0, -1)
-
-        bulkValue += `(${values}),`
-        console.log(bulkValue)
-
-        let insertStatement = "INSERT INTO " + table_name + "(" + columnNames + ")" + "VALUES" + bulkValue
-
-        fs.writeFile('dat.txt', bulkValue, (err) => {
-            if (err) console.log(err)
-        })
-
-        if (index % 25 === 0) {
-           /* connection.query(insertStatement, [],(error, results, fields) => {
-                if (error) return console.log(error)
-            })*/
-            // console.log(bulkValue)
-            // bulkValue = ""
-        }
+    // Gets values of the table from the object.
+    keys.map(key => {
+        columnNames += key.trim() + ","
 
     })
+    columnNames = columnNames.slice(0, -1)
+
+    insertStatement = "INSERT INTO " + table_name + "(" + columnNames + ") VALUES"
+
+    datas.map((data, index) => {
+        let _keys = Object.keys(data)
+        _keys.map(key => {
+
+            values += "'" + data[key].trim() + "',"
+        })
+        values = values.slice(0, -1)
+
+        bulkValue += " (" + values + "), "
+        values = "";
+
+        if (index % 250 === 0) {
+            let query = insertStatement + bulkValue
+            query = query.slice(0, -2)
+            connection.query(query, [],(error, results, fields) => {
+                 if (error) return console.log(error)
+             })
+            bulkValue = ""
+        }
+    })
+    //console.log(insertStatement);
     connection.end()
 }
 
