@@ -108,4 +108,33 @@ const insertDataBulk = (table_name, datas) => {
     connection.end()
 }
 
-module.exports = {createTable, insertData, insertDataBulk}
+const dropTable = (table_name) => {
+    const dropQuery = "DROP TABLE IF EXISTS " + table_name + ";"
+
+    connection.connect([], err => {
+        if (err) {console.log(err)}
+    })
+
+    connection.query(dropQuery, [],(error, results, fields) => {
+        if (error) return console.log(error)
+    })
+
+    connection.end()
+
+}
+
+const deleteTable = (table_name) => {
+    const deleteQuery = "DELETE FROM " + table_name + ";"
+
+    connection.connect([], err => {
+        if (err) {console.log(err)}
+    })
+
+    connection.query(deleteQuery, [],(error, results, fields) => {
+        if (error) return console.log(error)
+    })
+
+    connection.end()
+}
+
+module.exports = {createTable, insertData, insertDataBulk, dropTable, deleteTable}
