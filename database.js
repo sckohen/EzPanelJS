@@ -1,5 +1,4 @@
 let mysql = require('mysql')
-let fs = require('fs')
 
 let connection = mysql.createConnection({
     host     : 'localhost',
@@ -32,16 +31,7 @@ const createTable = (table_name, obj) => {
         }
     )
 
-    /*db.run(createStatement, (err) => {
-        if (err) {
-            // Table already created
-            console.log(`The table: ${table_name} already exists.`)
-        } else {
-            // Table just created
-            console.log(`The table ${table_name} successfully created.`)
-        }
-    })*/
-     connection.end()
+    connection.end()
 }
 
 const insertData = (table_name, data) => {
@@ -73,7 +63,6 @@ const insertData = (table_name, data) => {
 }
 
 const insertDataBulk = (table_name, datas) => {
-
     connection.connect([], err => {
         if (err) {console.log(err)}
     })
@@ -106,7 +95,7 @@ const insertDataBulk = (table_name, datas) => {
         bulkValue += " (" + values + "), "
         values = "";
 
-        if (index % 250 === 0) {
+        if (index % 1000 === 0) {
             let query = insertStatement + bulkValue
             query = query.slice(0, -2)
             connection.query(query, [],(error, results, fields) => {

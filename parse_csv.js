@@ -2,8 +2,8 @@ const csv = require('csv-parser')
 const fs = require('fs')
 const results = []
 
-const reader = (callback) => {
-    fs.createReadStream('raw.csv')
+const reader = (path, callback) => {
+    fs.createReadStream(path)
         .pipe(csv())
         .on('data', (data) => results.push(data))
         .on('error', function(err){
@@ -15,4 +15,3 @@ const reader = (callback) => {
 }
 
 module.exports = reader
-
