@@ -27,12 +27,14 @@ const clean_table = (table_name) => {
     db.deleteTable(table_name)
 }
 
-const create_and_populate_from_raw = (file_path, table_name) => {
+const create_and_populate_from_raw = (file_path, table_name, callback) => {
     new_genetics_table(table_name)
-    csv(file_path, (data) => {
-        // For all of data
-        db.insertDataBulk(table_name, data)
-    })
+    setTimeout(() => {
+        csv(file_path, (data) => {
+            // For all of data
+            db.insertDataBulk(table_name, data)
+        })
+    },2000)
 }
 
 module.exports = {new_genetics_table, new_variants_table, new_panels_table, new_panelrs_table,

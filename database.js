@@ -8,10 +8,6 @@ let connection = mysql.createConnection({
 });
 
 const createTable = (table_name, obj) => {
-    connection.connect([], err => {
-        if (err) {console.log(err)}
-    })
-
     // Fields of the table.
     let fields = ""
     // Column name of the table.
@@ -30,15 +26,9 @@ const createTable = (table_name, obj) => {
         if (error) return console.log(error)
         }
     )
-
-    connection.end()
 }
 
 const insertData = (table_name, data) => {
-    connection.connect([], err => {
-        if (err) {console.log(err)}
-    })
-
     // Values of the table.
     let values = ""
     let columnNames = ""
@@ -56,17 +46,11 @@ const insertData = (table_name, data) => {
     let insertStatement = "INSERT INTO `" + table_name + "` " + `(${columnNames}) VALUES (${values})`
 
     connection.query(insertStatement, [],(error, results, fields) => {
-            if (error) return console.log(error)
-        }
-    )
-    connection.end()
+        if (error) return console.log(error)
+    })
 }
 
 const insertDataBulk = (table_name, datas) => {
-    connection.connect([], err => {
-        if (err) {console.log(err)}
-    })
-
     let values = ""
     let bulkValue = ""
     let insertStatement = "";
@@ -99,42 +83,29 @@ const insertDataBulk = (table_name, datas) => {
             let query = insertStatement + bulkValue
             query = query.slice(0, -2)
             connection.query(query, [],(error, results, fields) => {
-                 if (error) return console.log(error)
-             })
+                if (error) return console.log(error)
+            })
+            // console.log(query)
             bulkValue = ""
         }
     })
     //console.log(insertStatement);
-    connection.end()
 }
 
 const dropTable = (table_name) => {
     const dropQuery = "DROP TABLE IF EXISTS " + table_name + ";"
 
-    connection.connect([], err => {
-        if (err) {console.log(err)}
-    })
-
     connection.query(dropQuery, [],(error, results, fields) => {
         if (error) return console.log(error)
     })
-
-    connection.end()
-
 }
 
 const deleteTable = (table_name) => {
     const deleteQuery = "DELETE FROM " + table_name + ";"
 
-    connection.connect([], err => {
-        if (err) {console.log(err)}
-    })
-
     connection.query(deleteQuery, [],(error, results, fields) => {
         if (error) return console.log(error)
     })
-
-    connection.end()
 }
 
 module.exports = {createTable, insertData, insertDataBulk, dropTable, deleteTable}
